@@ -1,0 +1,307 @@
+import React, { useState } from 'react';
+import './Policy.css'; // Import the CSS file for styling
+
+const Policy = () => {
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [confirmDialog, setConfirmDialog] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  const handlePolicyClick = (policy) => {
+    setSelectedPolicy(selectedPolicy === policy ? null : policy); // Toggle policy selection
+  };
+
+  const handleTimeOptionClick = (start, end) => {
+    setStartTime(start);
+    setEndTime(end);
+  };
+
+  const handleConfirm = () => {
+    setConfirmDialog(true);
+  };
+
+  const handleConfirmYes = () => {
+    // Add logic to handle confirmation and submission here
+    setConfirmDialog(false);
+  };
+
+  const handleConfirmEdit = () => {
+    setConfirmDialog(false);
+  };
+
+  const getArrowIcon = (policy) => {
+    if (selectedPolicy === policy) {
+      return '▲'; // Up arrow when expanded
+    }
+    return '▼'; // Down arrow when collapsed
+  };
+
+  const renderPolicyDetails = (policy) => {
+    switch (policy) {
+      case 'Daily':
+        return (
+          <div className="policy-details">
+            <label>Select your start and end time:</label>
+            <div className="time-inputs">
+              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+            </div>
+            <div className="time-options-container">
+              <span className="time-options-text">Or select the standard duration</span>
+            </div>
+            <button className="time-option-btn" onClick={() => handleTimeOptionClick('09:00', '17:00')}>
+              9-5 Option
+            </button>
+          </div>
+        );
+      case 'Weekly':
+        return (
+          <div className="policy-details">
+            <div className="weekly-details">
+              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                <div key={day} className="day-card">
+                  <div className="day-header">{day}</div>
+                  <div className="day-details">
+                    <label>Select Start Time:</label>
+                    <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                    <label>Select End Time:</label>
+                    <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                    <button className="time-option-btn">9-5 Option</button>
+                    <div className="set-as-container">
+                      <button className="set-as-btn" onClick={() => setSelectedDay(day)}>
+                        Set as {day}
+                      </button>
+                      {selectedDay && selectedDay === day && (
+                        <div className="submit-btn-container">
+                          <button className="submit-btn" onClick={handleConfirm}>
+                            Submit
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'Monthly':
+        return <div className="policy-details">Monthly Policy Details...</div>;
+      case 'Smart Algorithm':
+        return <div className="policy-details">Smart Algorithm Policy Details...</div>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="container">
+      <h2>Select Policy</h2>
+      <div className="rows-container">
+        {['Daily', 'Weekly', 'Monthly', 'Smart Algorithm'].map((policy) => (
+          <div key={policy} className="row">
+            <div className="row-header" onClick={() => handlePolicyClick(policy)}>
+              {policy}
+              <span className="arrow-icon">{getArrowIcon(policy)}</span>
+            </div>
+            {selectedPolicy === policy && renderPolicyDetails(policy)}
+          </div>
+        ))}
+      </div>
+      {confirmDialog && (
+        <div className="confirm-dialog">
+          Are you sure you want to continue with {startTime} to {endTime}?
+          <div className="confirm-options">
+            <button className="confirm-yes-btn" onClick={handleConfirmYes}>
+              Yes, continue
+            </button>
+            <button className="confirm-edit-btn" onClick={handleConfirmEdit}>
+              Continue to edit
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="golden-stripe"></div> {/* Golden stripe */}
+    </div>
+  );
+};
+
+export default Policy;
+/* Policy.css */
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  text-align: center;
+}
+
+h2 {
+  color: #007bff;
+}
+
+.rows-container {
+  margin-top: 20px;
+}
+
+.row {
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.row:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 5px;
+  background-color: #ffc107; /* Golden color */
+}
+
+.row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.arrow-icon {
+  font-size: 1.2rem;
+}
+
+.policy-details {
+  padding: 10px 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type='time'] {
+  width: 100px;
+  padding: 5px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+button.time-option-btn {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.time-option-btn:hover {
+  background-color: #218838;
+}
+
+.daily-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.time-inputs input {
+  margin: 0 5px;
+}
+
+.time-options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.time-option-btn {
+  margin-top: 5px;
+}
+
+.set-as-btn {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.set-as-btn:hover {
+  background-color: #218838;
+}
+
+.confirm-dialog {
+  margin-top: 10px;
+}
+
+.weekly-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.day-card {
+  width: calc(14% - 10px); /* Adjust the width as needed */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.day-header {
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.day-details {
+  padding: 10px;
+}
+
+.submit-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.confirm-dialog {
+  margin-top: 10px;
+}
+
+.golden-stripe {
+  background-color: #ffc107; /* Golden color */
+  height: 5px;
+  margin-top: 10px;
+}
