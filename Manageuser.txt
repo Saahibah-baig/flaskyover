@@ -1,0 +1,204 @@
+import React, { useState } from 'react';
+import './Manageuser.css';
+
+// Dummy data for users and applications
+const users = [
+  { id: 1, name: 'Alice', status: 'active' },
+  { id: 2, name: 'Bob', status: 'active' },
+  { id: 3, name: 'Charlie', status: 'pending' },
+];
+
+const applications = [
+  { id: 1, name: 'App One' },
+  { id: 2, name: 'App Two' },
+  { id: 3, name: 'App Three' },
+];
+
+const Manageuser = () => {
+  const [userList, setUserList] = useState(users);
+  const [assignUserId, setAssignUserId] = useState('');
+  const [assignAppId, setAssignAppId] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const handleDelete = (userId) => {
+    setUserList(userList.filter(user => user.id !== userId));
+    setMessages([...messages, `User with ID ${userId} has been deleted.`]);
+  };
+
+  const handleAccept = (userId) => {
+    setUserList(userList.map(user => user.id === userId ? { ...user, status: 'active' } : user));
+    setMessages([...messages, `User with ID ${userId} has been accepted.`]);
+  };
+
+  const handleAssign = (e) => {
+    e.preventDefault();
+    const user = userList.find(user => user.id === parseInt(assignUserId));
+    const app = applications.find(app => app.id === parseInt(assignAppId));
+    setMessages([...messages, `User ${user.name} has been assigned to ${app.name}.`]);
+    setAssignUserId('');
+    setAssignAppId('');
+  };
+
+  return (
+    <div className="manage-user-accounts-container">
+      <h2>Manage User Accounts</h2>
+      
+      <h3>Current Users</h3>
+      <ul>
+        {userList.filter(user => user.status === 'active').map(user => (
+          <li key={user.id}>
+            {user.name}
+            <button onClick={() => handleDelete(user.id)} className="delete-button">Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      <h3>Pending User Requests</h3>
+      <ul>
+        {userList.filter(user => user.status === 'pending').map(user => (
+          <li key={user.id}>
+            {user.name}
+            <button onClick={() => handleAccept(user.id)} className="accept-button">Accept</button>
+            <button onClick={() => handleDelete(user.id)} className="delete-button">Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      <h3>Assign User to Application</h3>
+      <form onSubmit={handleAssign} className="assign-form">
+        <div className="form-group">
+          <label htmlFor="userSelect">Select User</label>
+          <select
+            id="userSelect"
+            value={assignUserId}
+            onChange={(e) => setAssignUserId(e.target.value)}
+            className="select-field"
+            required
+          >
+            <option value="" disabled>Select a user</option>
+            {userList.filter(user => user.status === 'active').map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="appSelect">Select Application</label>
+          <select
+            id="appSelect"
+            value={assignAppId}
+            onChange={(e) => setAssignAppId(e.target.value)}
+            className="select-field"
+            required
+          >
+            <option value="" disabled>Select an application</option>
+            {applications.map((app) => (
+              <option key={app.id} value={app.id}>
+                {app.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button type="submit" className="assign-button">Assign</button>
+      </form>
+
+      {messages.map((message, index) => (
+        <p key={index} className="message">{message}</p>
+      ))}
+    </div>
+  );
+};
+
+export default Manageuser;
+
+.manage-user-accounts-container {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .manage-user-accounts-container h2,
+  .manage-user-accounts-container h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  ul li {
+    margin-bottom: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .delete-button,
+  .accept-button,
+  .assign-button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .delete-button:hover {
+    background-color: #d9534f;
+    transform: translateY(-2px);
+  }
+  
+  .accept-button:hover,
+  .assign-button:hover {
+    background-color: #5cb85c;
+    transform: translateY(-2px);
+  }
+  
+  .assign-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .select-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .message {
+    margin-top: 20px;
+    color: #28a745;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  

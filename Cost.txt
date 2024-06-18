@@ -1,0 +1,50 @@
+import json
+from datetime import datetime, timedelta
+from dateutil.parser import parse
+
+# Sample JSON data (replace this with your actual JSON data)
+json_data = '''
+[
+    {"APP": "CA1", "INSTANCE": 0, "DATETIME": "2024-03-28 08:45:00", "VALUE": 2.05},
+    {"APP": "CA1", "INSTANCE": 1, "DATETIME": "2024-03-28 08:45:00", "VALUE": 1.3},
+    {"APP": "CA2", "INSTANCE": 0, "DATETIME": "2024-03-28 08:45:00", "VALUE": 1.7}
+]
+'''
+
+# Sample list of cost dictionaries (replace this with your actual cost data)
+cost_data = [
+    {"cost": 10, "timestamp": "2024-03-12 10:15:00"},
+    {"cost": 15, "timestamp": "2024-03-28 08:45:00"}
+]
+
+# Parse JSON data
+usage_data = json.loads(json_data)
+
+def calculate_weekly_cost_for_app(app_name, usage_data, cost_data):
+    now = datetime.now()
+    one_week_ago = now - timedelta(days=7)
+    
+    total_cost = 0
+    current_cost_index = len(cost_data) - 1
+    
+    for entry in usage_data:
+        if entry['APP'] == app_name:
+            timestamp = parse(entry['DATETIME'])
+            value = entry['VALUE']
+            
+            if timestamp >= one_week_ago:
+                while current_cost_index >= 0 and parse(cost_data[current_cost_index]['timestamp']) > timestamp:
+                    current_cost_index -= 1
+                
+                if current_cost_index >= 0:
+                    cost_per_instance = cost_data[current_cost_index]['cost']
+                    total_cost += value * cost_per_instance
+            else:
+                break
+    
+    return total_cost
+
+# Calculate and print the weekly cost for a specific application
+app_name = "CA1"  # Specify the application name you want to calculate the cost for
+weekly_cost = calculate_weekly_cost_for_app(app_name, usage_data, cost_data)
+print(f"Total cost for application {app_name} over the past week: ${weekly_cost:.2f}")

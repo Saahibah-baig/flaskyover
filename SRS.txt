@@ -1,0 +1,53 @@
+INDEX
+
+1. PROBLEM ANALYSIS
+
+1.1 Overview of the project: Why computerized?
+
+1.2 Identification of project scope: Task involved:
+
+1.3 Objectives
+
+1.4 Infrastructure
+
+2. SOFTWARE REQUIREMENT ANALYSIS AND PLANNING
+
+2.1 Description of individual phase/module: 
+
+2.1.1 User characteristics 
+
+2.1.2 General constraints
+
+2.1.3 Assumption:
+
+Dependency:
+
+2.1.4 Functional requirements: -Input, Output, Description
+
+2.1 Identify individual module deliverables
+
+3.DATA MODELING
+
+3.1 System Architecture Design
+
+3.2 Use case Diagram
+
+3.3Acitvity Diagram
+
+3.4 DFD Diagram
+
+3.5 Class Diagram
+
+4)DEVELOPMENT
+
+4.1 Database Structure
+
+4.2 Coding and Implementation
+
+5)Software Testing
+
+5.1 Test results and debugging
+
+6)PROJECT DEMO
+
+6.1 Screen Shots

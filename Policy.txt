@@ -1,0 +1,190 @@
+import React, { useState } from 'react';
+import './Policy.css';
+
+const applications = [
+  { id: 1, name: 'App One' },
+  { id: 2, name: 'App Two' },
+  { id: 3, name: 'App Three' },
+];
+
+const Policy = () => {
+  const [selectedAppId, setSelectedAppId] = useState('');
+  const [policy, setPolicy] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [costSavings, setCostSavings] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (policy === 'smart') {
+      // Call backend to get smart recommendation savings (dummy data used here)
+      const savings = Math.random() * 100; // Simulated savings calculation
+      setCostSavings(savings.toFixed(2));
+      setMessages([...messages, `Smart policy applied to ${applications.find(app => app.id === parseInt(selectedAppId)).name}. Estimated savings: $${savings.toFixed(2)}`]);
+    } else {
+      setMessages([...messages, `Policy '${policy}' applied to ${applications.find(app => app.id === parseInt(selectedAppId)).name}.`]);
+      setCostSavings(null);
+    }
+    setSelectedAppId('');
+    setPolicy('');
+  };
+
+  return (
+    <div className="change-policy-app-container">
+      <h2>Change Policy per Application</h2>
+      <form onSubmit={handleSubmit} className="policy-form">
+        <div className="form-group">
+          <label htmlFor="appSelect">Select Application</label>
+          <select
+            id="appSelect"
+            value={selectedAppId}
+            onChange={(e) => setSelectedAppId(e.target.value)}
+            className="select-field"
+            required
+          >
+            <option value="" disabled>Select an application</option>
+            {applications.map((app) => (
+              <option key={app.id} value={app.id}>
+                {app.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Choose Policy</label>
+          <div className="radio-group">
+            <label>
+              <input
+                type="radio"
+                value="daily"
+                checked={policy === 'daily'}
+                onChange={() => setPolicy('daily')}
+              />
+              Daily
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="weekly"
+                checked={policy === 'weekly'}
+                onChange={() => setPolicy('weekly')}
+              />
+              Weekly
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="monthly"
+                checked={policy === 'monthly'}
+                onChange={() => setPolicy('monthly')}
+              />
+              Monthly
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="smart"
+                checked={policy === 'smart'}
+                onChange={() => setPolicy('smart')}
+              />
+              Smart Recommendation
+            </label>
+          </div>
+        </div>
+        <button type="submit" className="submit-button">Apply Policy</button>
+      </form>
+      {messages.map((message, index) => (
+        <p key={index} className="message">{message}</p>
+      ))}
+      {costSavings && <p className="cost-savings">Estimated savings: ${costSavings}</p>}
+    </div>
+  );
+};
+
+export default Policy;
+
+.change-policy-app-container {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .change-policy-app-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .policy-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .select-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+  
+  .radio-group label {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  
+  .message {
+    margin-top: 20px;
+    color: #28a745;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .cost-savings {
+    margin-top: 10px;
+    color: #ff5722;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  

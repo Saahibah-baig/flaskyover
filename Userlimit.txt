@@ -1,0 +1,147 @@
+import React, { useState } from 'react';
+import './Userlimit.css';
+
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' },
+  { id: 3, name: 'Charlie' },
+];
+
+const UserLimit = () => {
+  const [selectedUser, setSelectedUser] = useState('');
+  const [limit, setLimit] = useState('');
+  const [messages, setMessages] = useState({});
+
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value);
+  };
+
+  const handleLimitChange = (e) => {
+    setLimit(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setMessages((prevMessages) => ({
+      ...prevMessages,
+      [selectedUser]: `User ${selectedUser} limit has been updated to ${limit} applications.`,
+    }));
+    setLimit('');
+  };
+
+  return (
+    <div className="update-user-limit-container">
+      <h2>Update User Application Limit</h2>
+      <form onSubmit={handleSubmit} className="update-user-limit-form">
+        <div className="form-group">
+          <label htmlFor="userSelect">Select User</label>
+          <select
+            id="userSelect"
+            value={selectedUser}
+            onChange={handleUserChange}
+            className="select-field"
+            required
+          >
+            <option value="" disabled>Select a user</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.name}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="userLimit">Set User Limit</label>
+          <input
+            type="number"
+            id="userLimit"
+            value={limit}
+            onChange={handleLimitChange}
+            className="input-field"
+            min="1"
+            max="10"
+            placeholder="Enter limit"
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Update Limit
+        </button>
+      </form>
+      {Object.values(messages).map((message, index) => (
+        <p key={index} className="message">{message}</p>
+      ))}
+    </div>
+  );
+};
+
+export default UserLimit;
+
+.update-user-limit-container {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 40px auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .update-user-limit-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .update-user-limit-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  
+  .message {
+    margin-top: 20px;
+    color: #28a745;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  

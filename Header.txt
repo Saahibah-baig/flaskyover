@@ -1,0 +1,58 @@
+import React from 'react'
+import "./Header.css"
+const Header = () => {
+  return (
+   <>
+    < div  className='Container'>
+    <h1>WELLS FARGO</h1>
+        <button >Log Out</button>
+    </div >
+    <div className='second'>
+
+    </div>
+
+   </>
+  )
+}
+
+export default Header
+
+.Container {
+    position: relative;
+    height: 100px;
+    width: 100%;
+    background-color: rgba(255, 0, 0, 0.867);
+    padding: 0;
+    border-radius:5px;
+  }
+  
+  .Container h1 {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+   
+    font-size: 50px;
+    color: white;
+    margin: 0; 
+  }
+  
+  .Container button {
+    position: absolute;
+    right: 30px;
+    top: 20px;
+    height: 60px;
+    width: 150px;
+    border-radius: 30px;
+    font-size: 30px;
+    text-align: center;
+    cursor: pointer;
+    background-color: white;
+    font-weight: bold;
+  }
+  
+  .second {
+    height: 10px;
+    width: 100%;
+    background-color: rgba(239, 209, 12, 0.867);
+  }
+  

@@ -1,0 +1,136 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import "./Login.css";
+import { MdDelete } from "react-icons/md";
+import { RxUpdate } from "react-icons/rx";
+
+
+const roles = {
+  admin: 'admin',
+  developer: 'developer',
+  executive: 'executive',
+};
+
+const actionButtons = {
+  admin: [
+    { label: 'Update Application Limit', icon: <RxUpdate />, route: '/update-app-limit' },
+    { label: 'Update User Limit', route: '/update-user-limit' },
+    { label: 'Update Instance Type', route: '/update-instance-type' },
+    { label: 'App Overview', route: '/app-overview' },
+    { label: 'Manage User Accounts', route: '/manage-user-accounts' },
+  ],
+  developer: [
+    { label: 'Create New App', icon: <MdDelete />, route: '/create-app' },
+    { label: 'Delete App', route: '/delete-app' },
+    { label: 'Request Threshold Change', route: '/request-threshold-change' },
+    { label: 'Change Policy per App', route: '/change-policy-app' },
+    { label: 'App Overview', route: '/app-overview' },
+  ],
+  executive: [
+    { label: 'App Overview', route: '/app-overview' },
+  ],
+};
+
+const getUserRole = () => {
+  return roles.admin;
+};
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const role = getUserRole();
+
+  const renderButtons = () => {
+    return actionButtons[role].map((button, index) => (
+      <button
+        key={index}
+        onClick={() => navigate(button.route)}
+        className="action-button"
+      >
+       
+        {button.label}
+      <span className="button-icon">{   button.icon}</span>
+      </button>
+    ));
+  };
+
+  return (
+    <div className="dashboard-container">
+      <h1>{`${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`}</h1>
+      <div className="button-container">
+        {renderButtons()}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
+.dashboard-container {
+    text-align: center;
+    padding: 50px;
+    background: #ffffff;
+    height: 100vh;
+  }
+  
+  .button-container {
+    display: flex;
+    height: 40vh;
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+
+  .action-button {
+    background-color: #f13919;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    
+  }
+  .button-icon{
+    position: absolute;
+    margin-left: 30px;
+    margin-top: 5px;
+    color:rgb(228, 186, 17);
+  }
+  
+  .action-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    animation: pulse 0.9s infinite;
+  }
+  
+  .dashboard-container h1 {
+    font-size: 100px;
+    margin-bottom: 40px;
+    color: #000000;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .action-button:hover {
+   
+  }
+  

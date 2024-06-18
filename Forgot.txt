@@ -1,0 +1,75 @@
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
+const ForgotPassword = () => {
+  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [timer, setTimer] = useState(500);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const history = useHistory();
+
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+    }, 1000);
+    return () => clearInterval(countdown);
+  }, []);
+
+  const handleVerifyOtp = () => {
+    // Add your OTP verification logic here
+    if (otp === '123456') { // Replace this with real OTP verification
+      setIsOtpVerified(true);
+    } else {
+      alert('Invalid OTP');
+    }
+  };
+
+  const handleResetPassword = () => {
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    // Add your password reset logic here
+    alert('Password reset successful');
+    history.push('/login');
+  };
+
+  return (
+    <div className="forgot-password-container">
+      {!isOtpVerified ? (
+        <div className="otp-verification">
+          <h2>Forgot Password</h2>
+          <p>Please enter the OTP sent to your email</p>
+          <input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            placeholder="Enter OTP"
+          />
+          <button onClick={handleVerifyOtp}>Verify OTP</button>
+          <p>OTP will be active for {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')} minutes</p>
+        </div>
+      ) : (
+        <div className="reset-password">
+          <h2>Reset Password</h2>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="New Password"
+          />
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm New Password"
+          />
+          <button onClick={handleResetPassword}>Reset Password</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ForgotPassword;

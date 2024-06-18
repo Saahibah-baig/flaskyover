@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import './Threshold.css';
+
+// Dummy data: Developer's apps
+const developerApps = [
+  { id: 1, name: 'App One' },
+  { id: 2, name: 'App Two' },
+  { id: 3, name: 'App Three' },
+];
+
+const Threshold= () => {
+  const [selectedApp, setSelectedApp] = useState('');
+  const [threshold, setThreshold] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleAppChange = (e) => {
+    setSelectedApp(e.target.value);
+  };
+
+  const handleThresholdChange = (e) => {
+    setThreshold(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add logic to request threshold change here
+    setMessage(`Threshold change request for ${selectedApp} to ${threshold} has been submitted.`);
+    setSelectedApp('');
+    setThreshold('');
+  };
+
+  return (
+    <div className="request-threshold-change-container">
+      <h2>Request Threshold Change</h2>
+      <form onSubmit={handleSubmit} className="request-threshold-change-form">
+        <div className="form-group">
+          <label htmlFor="appSelect">Select App</label>
+          <select
+            id="appSelect"
+            value={selectedApp}
+            onChange={handleAppChange}
+            className="select-field"
+            required
+          >
+            <option value="" disabled>Select an app</option>
+            {developerApps.map((app) => (
+              <option key={app.id} value={app.name}>
+                {app.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="threshold">Set New Threshold</label>
+          <input
+            type="number"
+            id="threshold"
+            value={threshold}
+            onChange={handleThresholdChange}
+            className="input-field"
+            min="1"
+            placeholder="Enter new threshold"
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Request Change
+        </button>
+      </form>
+      {message && <p className="message">{message}</p>}
+    </div>
+  );
+};
+
+export default Threshold;
+.request-threshold-change-container {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 40px auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .request-threshold-change-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .request-threshold-change-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .select-field,
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  
+  .message {
+    margin-top: 20px;
+    color: #28a745;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
