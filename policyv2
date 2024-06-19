@@ -1,0 +1,649 @@
+import React, { useState } from 'react';
+import Modal from 'react-modal';
+import { FaPlusCircle, FaMinusCircle, FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import './App.css';
+
+function App() {
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedAppId, setSelectedAppId] = useState('');
+  const [actions, setActions] = useState({
+    daily: [],
+    weekly: {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+      Saturday: [],
+      Sunday: [],
+    },
+    monthly: {
+      weeks: [
+        { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+        { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+        { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+        { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+      ],
+    },
+  });
+
+  const [mondaySubmitted, setMondaySubmitted] = useState(false);
+  const [expandedWeeks, setExpandedWeeks] = useState([false, false, false, false]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedDay, setSelectedDay] = useState('');
+  const [weekIndex, setWeekIndex] = useState(null);
+  const [submittedDays, setSubmittedDays] = useState({
+    weekly: {
+      Monday: false,
+      Tuesday: false,
+      Wednesday: false,
+      Thursday: false,
+      Friday: false,
+      Saturday: false,
+      Sunday: false,
+    },
+    monthly: {
+      weeks: [
+        { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
+        { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
+        { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
+        { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
+      ],
+    },
+  });
+
+  const appIds = ['12345', '67890', '54321', '09876', '11223'];
+
+  const addNewAction = (day, weekIndex = null) => {
+    if (selectedPlan === 'daily') {
+      setActions({
+        ...actions,
+        daily: [...actions.daily, { startTime: '', actionType: '' }],
+      });
+    } else if (selectedPlan === 'weekly') {
+      setActions({
+        ...actions,
+        weekly: {
+          ...actions.weekly,
+          [day]: [...actions.weekly[day], { startTime: '', actionType: '' }],
+        },
+      });
+    } else if (selectedPlan === 'monthly') {
+      const newWeeks = actions.monthly.weeks.map((week, i) =>
+        i === weekIndex
+          ? {
+              ...week,
+              [day]: [...week[day], { startTime: '', actionType: '' }],
+            }
+          : week
+      );
+      setActions({ ...actions, monthly: { ...actions.monthly, weeks: newWeeks } });
+    }
+  };
+
+  const handleActionChange = (day, index, key, value, weekIndex = null) => {
+    if (selectedPlan === 'daily') {
+      const newActions = [...actions.daily];
+      newActions[index][key] = value;
+      setActions({ ...actions, daily: newActions });
+    } else if (selectedPlan === 'weekly') {
+      const newActions = { ...actions.weekly };
+      newActions[day][index][key] = value;
+      setActions({ ...actions, weekly: newActions });
+    } else if (selectedPlan === 'monthly') {
+      const newWeeks = actions.monthly.weeks.map((week, i) =>
+        i === weekIndex
+          ? {
+              ...week,
+              [day]: week[day].map((action, j) => (j === index ? { ...action, [key]: value } : action)),
+            }
+          : week
+      );
+      setActions({ ...actions, monthly: { ...actions.monthly, weeks: newWeeks } });
+    }
+  };
+
+  const removeAction = (day, index, weekIndex = null) => {
+    if (selectedPlan === 'daily') {
+      const newActions = actions.daily.filter((_, i) => i !== index);
+      setActions({ ...actions, daily: newActions });
+    } else if (selectedPlan === 'weekly') {
+      const newActions = { ...actions.weekly };
+      newActions[day] = newActions[day].filter((_, i) => i !== index);
+      setActions({ ...actions, weekly: newActions });
+    } else if (selectedPlan === 'monthly') {
+      const newWeeks = actions.monthly.weeks.map((week, i) =>
+        i === weekIndex
+          ? {
+              ...week,
+              [day]: week[day].filter((_, j) => j !== index),
+            }
+          : week
+      );
+      setActions({ ...actions, monthly: { ...actions.monthly, weeks: newWeeks } });
+    }
+  };
+
+  const toggleWeekExpansion = (weekIndex) => {
+    setExpandedWeeks((prev) => prev.map((expanded, i) => (i === weekIndex ? !expanded : expanded)));
+  };
+
+  const handleSubmitClick = (day, weekIndex = null) => {
+    setSelectedDay(day);
+    setWeekIndex(weekIndex);
+    setShowPopup(true);
+  };
+
+  const handleConfirmSubmit = () => {
+    if (selectedPlan === 'weekly') {
+      setSubmittedDays({
+        ...submittedDays,
+        weekly: {
+          ...submittedDays.weekly,
+          [selectedDay]: true,
+        },
+      });
+    } else if (selectedPlan === 'monthly') {
+      const newWeeklySubmitted = [...submittedDays.monthly.weeks];
+      newWeeklySubmitted[weekIndex][selectedDay] = true;
+      setSubmittedDays({
+        ...submittedDays,
+        monthly: {
+          ...submittedDays.monthly,
+          weeks: newWeeklySubmitted,
+        },
+      });
+    }
+    setMondaySubmitted(true);
+    setShowPopup(false);
+  };
+
+  return (
+    <div className="App">
+      <div className="navbar">
+        <h1>Scheduler App</h1>
+        <div className="app-id">
+          <label htmlFor="app-id-select">App ID:</label>
+          <select
+            id="app-id-select"
+            value={selectedAppId}
+            onChange={(e) => setSelectedAppId(e.target.value)}
+          >
+            <option value="" disabled>
+              Select App ID
+            </option>
+            {appIds.map((appId) => (
+              <option key={appId} value={appId}>
+                {appId}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="plan-selector">
+        <label>
+          <input
+            type="radio"
+            value="daily"
+            checked={selectedPlan === 'daily'}
+            onChange={() => setSelectedPlan('daily')}
+          />
+          Daily
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="weekly"
+            checked={selectedPlan === 'weekly'}
+            onChange={() => setSelectedPlan('weekly')}
+          />
+          Weekly
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="monthly"
+            checked={selectedPlan === 'monthly'}
+            onChange={() => setSelectedPlan('monthly')}
+          />
+          Monthly
+        </label>
+      </div>
+
+      <div className="plan-details">
+        {selectedPlan === 'daily' && (
+          <div className="daily-plan">
+            <h2>Daily Plan</h2>
+            <div className="date">
+              <h3>Actions for Today</h3>
+              <FaPlusCircle className="add-icon" onClick={() => addNewAction()} />
+            </div>
+            {actions.daily.map((action, index) => (
+              <div key={index} className="action-creator">
+                <input
+                  type="time"
+                  value={action.startTime}
+                  onChange={(e) => handleActionChange(null, index, 'startTime', e.target.value)}
+                  disabled={mondaySubmitted}
+                />
+                <select
+                  value={action.actionType}
+                  onChange={(e) => handleActionChange(null, index, 'actionType', e.target.value)}
+                  disabled={mondaySubmitted}
+                >
+                  <option value="">Select Action</option>
+                  <option value="scale up">Scale Up</option>
+                  <option value="scale down">Scale Down</option>
+                  <option value="terminate">Terminate</option>
+                </select>
+                <FaMinusCircle
+                  className="remove-icon"
+                  onClick={() => removeAction(null, index)}
+                  style={{ cursor: mondaySubmitted ? 'not-allowed' : 'pointer' }}
+                />
+              </div>
+            ))}
+            <button onClick={() => handleSubmitClick(null)}>Submit</button>
+          </div>
+        )}
+
+        {selectedPlan === 'weekly' && (
+          <div className="weekly-plan">
+            <h2>Weekly Plan</h2>
+            {Object.keys(actions.weekly).map((day) => (
+              <div key={day} className="weekly-day">
+                <div className="date">
+                  <h3>{day}</h3>
+                  <FaPlusCircle className="add-icon" onClick={() => addNewAction(day)} />
+                </div>
+                {actions.weekly[day].map((action, index) => (
+                  <div key={index} className="action-creator">
+                    <input
+                      type="time"
+                      value={action.startTime}
+                      onChange={(e) => handleActionChange(day, index, 'startTime', e.target.value)}
+                      disabled={submittedDays.weekly[day]}
+                    />
+                    <select
+                      value={action.actionType}
+                      onChange={(e) => handleActionChange(day, index, 'actionType', e.target.value)}
+                      disabled={submittedDays.weekly[day]}
+                    >
+                      <option value="">Select Action</option>
+                      <option value="scale up">Scale Up</option>
+                      <option value="scale down">Scale Down</option>
+                      <option value="terminate">Terminate</option>
+                    </select>
+                    <FaMinusCircle
+                      className="remove-icon"
+                      onClick={() => removeAction(day, index)}
+                      style={{ cursor: submittedDays.weekly[day] ? 'not-allowed' : 'pointer' }}
+                    />
+                  </div>
+                ))}
+                <button onClick={() => handleSubmitClick(day)}>Submit</button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {selectedPlan === 'monthly' && (
+          <div className="monthly-plan">
+            <h2>Monthly Plan</h2>
+            {actions.monthly.weeks.map((week, weekIndex) => (
+              <div key={weekIndex} className="monthly-week">
+                <div className="week-header">
+                  <h3>Week {weekIndex + 1}</h3>
+                  {expandedWeeks[weekIndex] ? (
+                    <FaArrowUp
+                      className="toggle-icon"
+                      onClick={() => toggleWeekExpansion(weekIndex)}
+                    />
+                  ) : (
+                    <FaArrowDown
+                      className="toggle-icon"
+                      onClick={() => toggleWeekExpansion(weekIndex)}
+                    />
+                  )}
+                </div>
+                {expandedWeeks[weekIndex] &&
+                  Object.keys(week).map((day) => (
+                    <div key={day} className="monthly-day">
+                      <div className="date">
+                        <h4>{day}</h4>
+                        <FaPlusCircle
+                          className="add-icon"
+                          onClick={() => addNewAction(day, weekIndex)}
+                        />
+                      </div>
+                      {week[day].map((action, index) => (
+                        <div key={index} className="action-creator">
+                          <input
+                            type="time"
+                            value={action.startTime}
+                            onChange={(e) =>
+                              handleActionChange(day, index, 'startTime', e.target.value, weekIndex)
+                            }
+                            disabled={submittedDays.monthly.weeks[weekIndex][day]}
+                          />
+                          <select
+                            value={action.actionType}
+                            onChange={(e) =>
+                              handleActionChange(day, index, 'actionType', e.target.value, weekIndex)
+                            }
+                            disabled={submittedDays.monthly.weeks[weekIndex][day]}
+                          >
+                            <option value="">Select Action</option>
+                            <option value="scale up">Scale Up</option>
+                            <option value="scale down">Scale Down</option>
+                            <option value="terminate">Terminate</option>
+                          </select>
+                          <FaMinusCircle
+                            className="remove-icon"
+                            onClick={() => removeAction(day, index, weekIndex)}
+                            style={{
+                              cursor: submittedDays.monthly.weeks[weekIndex][day]
+                                ? 'not-allowed'
+                                : 'pointer',
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <button onClick={() => handleSubmitClick(day, weekIndex)}>Submit</button>
+                    </div>
+                  ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Modal isOpen={showPopup} onRequestClose={() => setShowPopup(false)} className="popup-modal">
+        <h2>Confirm Submission</h2>
+        <p>Are you sure you want to submit?</p>
+        <button onClick={handleConfirmSubmit}>Yes</button>
+        <button onClick={() => setShowPopup(false)}>No</button>
+      </Modal>
+    </div>
+  );
+}
+
+export default App;
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to right, #f4c542, #bf1e2e);
+  color: #333;
+}
+
+.App {
+  padding: 20px;
+  width: 1500px;
+  margin-top: 30px;
+  margin-left: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #bf1e2e;
+  color: white;
+  border-radius: 10px;
+}
+
+.navbar h1 {
+  font-size: 2em;
+}
+
+.app-id {
+  display: flex;
+  align-items: center;
+}
+
+.app-id label {
+  margin-right: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.app-id select {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background: #f4c542;
+  color: #333;
+  font-size: 1em;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-id select:hover {
+  background: #e5b933;
+  color: #222;
+}
+
+.plan-selector {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  background: #f4c542;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.plan-selector h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.plan-selector label {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.plan-selector input[type="radio"] {
+  margin-right: 5px;
+}
+
+.plan-details {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.plan-details h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.weekly-plan {
+  display: flex;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+.day-tile {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-right: 10px;
+  flex: 1;
+  width: 350px;
+}
+
+.day-tile h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.add-icon {
+  cursor: pointer;
+  color: #bf1e2e;
+  font-size: 1.5em;
+  transition: color 0.3s ease;
+}
+
+.add-icon:hover {
+  color: #a5171a;
+}
+
+/* Action Creator Styles */
+.action-creator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.action-creator input,
+.action-creator select {
+  padding: 5px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.action-creator select {
+  cursor: pointer;
+}
+
+.modal-content {
+}
+
+/* Existing styles... */
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Styles for Monthly Plan */
+.monthly-plan .week-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.week-tile h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.week-tile .week-details {
+  display: none;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.week-tile.expanded .week-details {
+  display: flex;
+}
+
+.week-details .day-tile {
+  flex: 1;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  width: calc(100% / 7 - 10px);
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.week-details .day-tile h4 {
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: #bf1e2e;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background: #a5171a;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup h2 {
+  margin-bottom: 20px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.popup-buttons button {
+  width: 48%;
+}
