@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
+import "./Daily.css"
+function Daily() {
+  const [actions, setActions] = useState([]);
+  const [timeInput, setTimeInput] = useState('');
+  const [actionInput, setActionInput] = useState('');
+
+  const handleAddNewAction = () => {
+    if (timeInput && actionInput) {
+      const newAction = { startTime: timeInput, actionType: actionInput };
+      setActions([...actions, newAction]);
+      setTimeInput('');
+      setActionInput('');
+    }
+  };
+
+  const handleRemoveAction = (index) => {
+    const updatedActions = actions.filter((_, i) => i !== index);
+    setActions(updatedActions);
+  };
+
+  return (
+    <div className="daily-plan">
+      <h2>Daily Plan</h2>
+      <div className="action-inputs">
+        <input
+          type="time"
+          value={timeInput}
+          onChange={(e) => setTimeInput(e.target.value)}
+        />
+        <select
+          value={actionInput}
+          onChange={(e) => setActionInput(e.target.value)}
+        >
+          <option value="">Select Action</option>
+          <option value="Scale Up">Scale Up</option>
+          <option value="Scale Down">Scale Down</option>
+          <option value="Terminate">Terminate</option>
+          <option value="Restart">Restart</option>
+        </select>
+        <FaPlusCircle onClick={handleAddNewAction} />
+      </div>
+      <div className="action-list">
+        {actions.map((action, index) => (
+          <div key={index} className="action-item">
+            <span>{action.startTime} - {action.actionType}</span>
+            <FaMinusCircle onClick={() => handleRemoveAction(index)} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Daily;
+.daily-plan {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .daily-plan h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .action-inputs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .action-inputs input[type="time"],
+  .action-inputs select {
+    margin-right: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  
+  .action-inputs select {
+    flex: 1;
+  }
+  
+  .action-list {
+    margin-top: 15px;
+  }
+  
+  .action-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .action-item span {
+    font-size: 18px;
+  }
+  
+  .action-item svg {
+    cursor: pointer;
+    color: #ff4d4f;
+    transition: color 0.3s ease;
+  }
+  
+  .action-item svg:hover {
+    color: #ff7875;
+  }
+  
