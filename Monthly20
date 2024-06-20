@@ -1,0 +1,26 @@
+import React, { useState } from 'react';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import Weekly from './Weekly';
+
+function Monthly() {
+  const [expandedWeeks, setExpandedWeeks] = useState([false, false, false, false]);
+
+  const toggleWeekExpansion = (weekIndex) => {
+    setExpandedWeeks((prev) => prev.map((expanded, i) => (i === weekIndex ? !expanded : expanded)));
+  };
+
+  return (
+    <div className="monthly-plan">
+      {expandedWeeks.map((expanded, weekIndex) => (
+        <div key={weekIndex} className="monthly-week">
+          <h3 onClick={() => toggleWeekExpansion(weekIndex)}>
+            Week {weekIndex + 1} {expanded ? <FaArrowUp /> : <FaArrowDown />}
+          </h3>
+          {expanded && <Weekly weekIndex={weekIndex} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default Monthly;
