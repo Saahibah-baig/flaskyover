@@ -1,0 +1,65 @@
+import React, { useState } from 'react';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import Weekly from './Weekly';
+
+function Monthly() {
+  const [expandedWeeks, setExpandedWeeks] = useState([false, false, false, false]);
+  const [selectedWeek, setSelectedWeek] = useState('');
+  const [weeksData, setWeeksData] = useState([
+    { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+    { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+    { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
+    { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }
+  ]);
+
+  const toggleWeekExpansion = (weekIndex) => {
+    setExpandedWeeks((prev) => prev.map((expanded, i) => (i === weekIndex ? !expanded : expanded)));
+  };
+
+  const setAsWeek = (fromWeek, toWeek) => {
+    setWeeksData((prevWeeks) => {
+      const newWeeksData = [...prevWeeks];
+      newWeeksData[toWeek] = JSON.parse(JSON.stringify(prevWeeks[fromWeek]));
+      return newWeeksData;
+    });
+  };
+
+  const handleCopyClick = (weekIndex) => {
+    if (selectedWeek !== '') {
+      setAsWeek(selectedWeek, weekIndex);
+    } else {
+      alert('Please select a week to copy from.');
+    }
+  };
+
+  return (
+    <div className="monthly-plan">
+      {expandedWeeks.map((expanded, weekIndex) => (
+        <div key={weekIndex} className="monthly-week">
+          <h3 onClick={() => toggleWeekExpansion(weekIndex)}>
+            Week {weekIndex + 1} {expanded ? <FaArrowUp /> : <FaArrowDown />}
+          </h3>
+          {expanded && (
+            <div>
+              <Weekly weekIndex={weekIndex} weekData={weeksData[weekIndex]} setWeeksData={setWeeksData} />
+              <select
+                onChange={(e) => setSelectedWeek(e.target.value)}
+                value={selectedWeek}
+              >
+                <option value="">Select Week to Copy From</option>
+                {weeksData.map((_, index) => (
+                  <option key={index} value={index}>
+                    Week {index + 1}
+                  </option>
+                ))}
+              </select>
+              <button onClick={() => handleCopyClick(weekIndex)}>Copy</button>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default Monthly;
