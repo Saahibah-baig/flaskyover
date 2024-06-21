@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import './user.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
-import usersData from './profile.json'; 
+import usersData from './profile.json';
+
 const User = () => {
   const [userList, setUserList] = useState(usersData);
+  const [popup, setPopup] = useState({ visible: false, userId: null, type: '' });
+  const [unblockTimers, setUnblockTimers] = useState({});
 
   const updateUserStatus = (id, status) => {
     setUserList(userList.map(user => user.id === id ? { ...user, status } : user));
+    if (status === 'blocked') {
+      setUnblockTimers(prev => ({ ...prev, [id]: Date.now() + 3 * 24 * 60 * 60 * 1000 }));
+    }
   };
 
   const handleAccept = (id) => {
@@ -19,11 +25,25 @@ const User = () => {
   };
 
   const handleBlock = (id) => {
-    updateUserStatus(id, 'blocked');
+    setPopup({ visible: true, userId: id, type: 'block' });
   };
 
   const handleRemove = (id) => {
+    setPopup({ visible: true, userId: id, type: 'remove' });
+  };
+
+  const confirmBlock = (id) => {
+    updateUserStatus(id, 'blocked');
+    setPopup({ visible: false, userId: null, type: '' });
+  };
+
+  const confirmRemove = (id) => {
     setUserList(userList.filter(user => user.id !== id));
+    setPopup({ visible: false, userId: null, type: '' });
+  };
+
+  const handleUnblock = (id) => {
+    alert(`User cannot be unblocked for another ${(unblockTimers[id] - Date.now()) / (1000 * 60 * 60 * 24)} days.`);
   };
 
   return (
@@ -47,40 +67,42 @@ const User = () => {
             <div className="button-group">
               {user.status === 'pending' && (
                 <>
-                  <button
-                    className="button accept-button"
-                    onClick={() => handleAccept(user.id)}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    className="button decline-button"
-                    onClick={() => handleDecline(user.id)}
-                  >
-                    Decline
-                  </button>
+                  <button className="button accept-button" onClick={() => handleAccept(user.id)}>Accept</button>
+                  <button className="button decline-button" onClick={() => handleDecline(user.id)}>Decline</button>
                 </>
               )}
               {user.status === 'accepted' && (
-                <button
-                  className="button block-button"
-                  onClick={() => handleBlock(user.id)}
-                >
-                  Block
-                </button>
+                <button className="button block-button" onClick={() => handleBlock(user.id)}>Block</button>
               )}
-              {user.status !== 'pending' && (
-                <button
-                  className="button remove-button"
-                  onClick={() => handleRemove(user.id)}
-                >
-                  Remove
-                </button>
+              {user.status === 'blocked' && (
+                <button className="button unblock-button" onClick={() => handleUnblock(user.id)} disabled={unblockTimers[user.id] > Date.now()}>Unblock</button>
+              )}
+              {user.status !== 'pending' && user.status !== 'blocked' && (
+                <button className="button remove-button" onClick={() => handleRemove(user.id)}>Remove</button>
               )}
             </div>
           </li>
         ))}
       </ul>
+      {popup.visible && (
+        <div className="popup">
+          <div className="popup-content">
+            {popup.type === 'block' && (
+              <>
+                <p>Once a user is blocked, they cannot be unblocked for another 3 business days. Are you sure?</p>
+                <button className="button confirm-button" onClick={() => confirmBlock(popup.userId)}>Confirm</button>
+              </>
+            )}
+            {popup.type === 'remove' && (
+              <>
+                <p>Once a user is removed, they cannot be added back for another 5 business days. Are you sure?</p>
+                <button className="button confirm-button" onClick={() => confirmRemove(popup.userId)}>Confirm</button>
+              </>
+            )}
+            <button className="button cancel-button" onClick={() => setPopup({ visible: false, userId: null, type: '' })}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -88,163 +110,218 @@ const User = () => {
 export default User;
 
 
+/* user.css */
+
 :root {
-    --primary-color: #a51d2d; 
-    --secondary-color: #ffd700; 
-    --background-color: #f1f1f1;
-    --text-color: #333;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --transition-speed: 0.3s;
-  }
-  
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-  }
-  
-  .management-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    max-width: 800px;
-    margin: 40px auto;
-    box-shadow: var(--box-shadow);
-  }
-  
-  .title {
-    color: var(--primary-color);
-    text-align: center;
-    font-family: 'Helvetica', sans-serif;
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    position: relative;
-  }
-  
-  .title::after {
-    content: "";
-    display: block;
-    width: 50px;
-    height: 4px;
-    background: var(--secondary-color);
-    margin: 8px auto;
-    border-radius: 2px;
-  }
-  
-  .user-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .user-item {
-    background-color: #fff;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    box-shadow: var(--box-shadow);
-    position: relative;
-    transition: box-shadow var(--transition-speed);
-  }
-  
-  .user-item:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-  
-  .user-name {
-    font-family: 'Arial', sans-serif;
-    color: var(--text-color);
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  
-  .user-name-icon {
-    margin-right: 10px;
-    color: var(--primary-color);
-    font-size: 1.5em;
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-family: 'Arial', sans-serif;
-    transition: background-color var(--transition-speed);
-    color: #fff;
-  }
-  
-  .accept-button {
-    background-color: #1b5e20; 
-  }
-  
-  .accept-button:hover {
-    background-color: #144d14;
-  }
-  
-  .decline-button {
-    background-color: #d32f2f; 
-  }
-  
-  .decline-button:hover {
-    background-color: #b71c1c;
-  }
-  
-  .block-button {
-    background-color: #ffab00; 
-  }
-  
-  .block-button:hover {
-    background-color: #ff8f00;
-  }
-  
-  .remove-button {
-    background-color: #757575; 
-  }
-  
-  .remove-button:hover {
-    background-color: #616161;
-  }
-  
-  .tooltip-card {
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    box-shadow: var(--box-shadow);
-    border-radius: var(--border-radius);
-    padding: 15px;
-    top: 40px; 
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    pointer-events: none; 
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-    opacity: 0;
-    visibility: hidden;
-  }
-  
-  .user-name:hover .tooltip-card, .user-name-icon:hover + .tooltip-card {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .tooltip-card p {
-    margin: 5px 0;
-    font-family: 'Arial', sans-serif;
-    color: var(--text-color);
-  }
+  --primary-color: #a51d2d; 
+  --secondary-color: #ffd700; 
+  --background-color: #f1f1f1;
+  --text-color: #333;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+.management-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  max-width: 800px;
+  margin: 40px auto;
+  box-shadow: var(--box-shadow);
+}
+
+.title {
+  color: var(--primary-color);
+  text-align: center;
+  font-family: 'Helvetica', sans-serif;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 4px;
+  background: var(--secondary-color);
+  margin: 8px auto;
+  border-radius: 2px;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  box-shadow: var(--box-shadow);
+  position: relative;
+  transition: box-shadow var(--transition-speed);
+}
+
+.user-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.user-name {
+  font-family: 'Arial', sans-serif;
+  color: var(--text-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-name-icon {
+  margin-right: 10px;
+  color: var(--primary-color);
+  font-size: 1.5em;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+  transition: background-color var(--transition-speed);
+  color: #fff;
+}
+
+.accept-button {
+  background-color: #1b5e20; 
+}
+
+.accept-button:hover {
+  background-color: #144d14;
+}
+
+.decline-button {
+  background-color: #d32f2f; 
+}
+
+.decline-button:hover {
+  background-color: #b71c1c;
+}
+
+.block-button {
+  background-color: #ffab00; 
+}
+
+.block-button:hover {
+  background-color: #ff8f00;
+}
+
+.remove-button {
+  background-color: #757575; 
+}
+
+.remove-button:hover {
+  background-color: #616161;
+}
+
+.unblock-button {
+  background-color: #ffa500; 
+  cursor: not-allowed;
+}
+
+.tooltip-card {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  top: 40px; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  pointer-events: none; 
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.user-name.hovered .tooltip-card {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tooltip-card p {
+  margin: 5px 0;
+  font-family: 'Arial', sans-serif;
+  color: var(--text-color);
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+.popup button {
+  margin: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+  color: #fff;
+}
+
+.popup .confirm-button {
+  background-color: #d32f2f; 
+}
+
+.popup .confirm-button:hover {
+  background-color: #b71c1c;
+}
+
+.popup .cancel-button {
+  background-color: #757575; 
+}
+
+.popup .cancel-button:hover {
+  background-color: #616161;
+}
+
   [
     {
       "id": 1,
