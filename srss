@@ -1,0 +1,112 @@
+oftware Requirements Specification (SRS) for Cloudifi - Cloud Cost Optimizer
+1. Problem Analysis
+1.1 Aim
+The goal of the Cloudifi project is to create a platform for optimizing cloud costs by helping you easily scale out/in your virtual instances manually as well automatically. It is specifically designed to help businesses drive down the contract value of cloud infrastructures while making sure applications perform at maximum performance levels. Cloudifi offers deep insights into costs, allows you to customize your scaling policies and provides an intelligent real-time algorithm for reducing cloud waste.
+1.2 Scope
+Cloudifi is a one size fits all solution and supports the following user roles: 
+Developer, Admin, and Executive. 
+
+For Developers:
+Provisioning and de-provisioning applications on Virtual Machines
+Requesting changes to application resource limits.
+Updating Application-Specific Scale Policies
+Detailed breakdown of costs vs. savings of applications
+For Admins:
+Limit resources and applications for a user from doing any desired action.
+Updating instance types.
+Managing user accounts, creation and deletion of the users.
+Detailed Application Overviews
+For Executives:
+Developers getting quick, high-level glimpses of app costs and savings
+It allows to scale numerous things on your platform and do so at a daily, weekly or monthly basis . These operations are like scaling up/down of instances, terminating instances or changing the types of instances. Smartifi algorithm - Automated scaling based on real-time utilization metrics for most efficient auto-scaling to up-scale (or down-scale) necessary resources to meet demand without losing performance or cost benefits.
+
+1.3 Overview
+
+Cloudifi addresses the critical need for cloud resource efficiency and cost efficiency in today’s cloud-deployment environment. The main features of the platform are:
+
+Application Management: Allows developers to create, delete, and manage applications in virtual instances.
+Cost Monitoring: Provides real-time insight into actual costs and potential savings calculated for each application.
+Scheduling Functionality: Enables users to define and apply scaling schedules on a daily, weekly or monthly basis, specifying start times and actions such as scale up/down scaling and standing by instances
+Scaling Operations: Provides manual and systematic scaling operations, including:
+All instances stop.
+Keep track of all the times.
+Reduce the instances.
+Increase the instances.
+Scale down the instance type.
+Scale up the instances.
+Smartifi algorithm: Monitors usage metrics every minute and automatically scales instances based on a predefined threshold (scale up if usage is less than 50%, scale up if greater than 80%).
+By integrating these features, Cloudifi ensures more efficient use of resources, significant cost savings, and improved efficiency for cloud-based applications
+1.4 Target audience
+
+Cloudifi’s key target audiences include:
+
+Developers: These users are responsible for developing and maintaining applications in virtual instances. They need tools to create, delete, and modify applications and systems, and track costs and savings.
+
+Administrators: These users are responsible for the overall management of services and resources. They handle application and user restrictions, update instance types, and manage user accounts.
+
+Entrepreneurs: These users are focused on finding higher levels of spending and savings. Access to application metrics is needed to make informed investment decisions and develop resource allocation plans.
+
+1.5 Definitions (Acronyms and abbreviations) .
+
+Cloudifi: The name of the cloud cost optimization platform.
+
+Developer: The user role responsible for creating, deleting, and maintaining applications in virtual instances.
+
+
+Admin: User role that manages application and user restrictions, manages instances, and manages user accounts.
+
+Staff: Implementation focused on identifying spending and high levels of savings insight.
+
+Scheduling: A set of rules governing how and when scaling operations are performed.
+
+
+Scaling: The process of changing the number or type of virtual instances based on resource usage and application needs.
+
+Smartifi algorithm: An intelligent algorithm that makes scaling decisions based on real-time usage data for efficiency and cost-effectiveness.
+
+USP (Unique Selling Proposition): What sets the platform apart from competitors.
+1.7 References
+
+The following articles provide additional information and background information on the Cloudifi project:
+
+Amazon Web Services (AWS) Auto Scaling Documentation: This resource provides detailed information about AWS auto-scaling features, providing insight into industry best practices for scaling cloud resources AWS auto-scaling documentation
+
+Cloud Cost Management Best Practices : This article from Google Cloud outlines options for optimizing cloud costs, providing valuable tips and tricks on the Cloudifi platform Cloud Cost Management Best Practices
+
+Managing Virtual Instances on Azure : This documentation from Microsoft Azure includes managing virtual machine instances, virtual instance management that provides insight into managing cloud resources efficiently
+
+Scaling Policy Strategies by Red Hat: This resource discusses effective strategies for scaling policy, helping to identify Cloudifi’s policy management features Scaling Policy Strategies
+
+By leveraging these references, the Cloudifi platform can be developed with a solid foundation of industry knowledge and best practices, ensuring it caters to its target audience needs and optimize its cloud cost-effectiveness objectives.
+
+Software Requirement Specification (SRS) for Cloudifi - Cloud Cost Optimizer
+2. Software requirements analysis and planning
+2.1 Major system components/connections
+
+Cloudifi has several key features and links:
+
+User Interface (UI): Provides a simple dashboard for developers, administrators and executives to interact with the platform.
+Application Management Module: Facilitates application creation, deletion, and configuration management.
+Policy management module: Allows users to define and apply scaling policies to applications.
+Resource Monitoring Module: Monitors application costs in real time and provides insights into potential savings.
+Smartifi algorithm module: it automates scaling decisions based on real-time usage metrics.
+User management module: Manages user accounts, roles, and permissions.
+2.2 Description of individual components/modules
+
+2.2.1 User Type
+
+Developers: Comfortable with application development and cloud infrastructure management.
+Professionals: Experienced in content allocation, instance management, and user account management.
+Management: Requires high level financial vision and strategic decision making.
+2.2.2 General Limitations - Design Operating Environment
+
+Cloudifi operates in a cloud environment (e.g., AWS, Azure) and is accessible through modern web browsers (Chrome, Firefox, Edge).
+
+2.2.3 Assumptions
+
+Users have basic knowledge of cloud computing concepts and terminology.
+The platform will handle multiple simultaneous user sessions without loss of performance.
+A reliable internet connection is assumed for users who visit the platform.
+2.2.4 Functional requirements Input/output information
+
+Input: User commands through the UI (e.g., create/delete application, change settings), real-time usage metrics m from monitoring
