@@ -1,0 +1,143 @@
+import React, { useState, useEffect } from 'react';
+import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
+import './Weekly.css';
+
+function Weekly({ weekIndex, weekData, setWeeksData }) {
+  const [days, setDays] = useState(weekData);
+
+  useEffect(() => {
+    setDays(weekData);
+  }, [weekData]);
+
+  const [selectedDay, setSelectedDay] = useState('');
+  const [setAsText, setSetAsText] = useState('');
+  const [timeInputs, setTimeInputs] = useState({
+    Monday: '',
+    Tuesday: '',
+    Wednesday: '',
+    Thursday: '',
+    Friday: '',
+    Saturday: '',
+    Sunday: '',
+  });
+  const [actionInputs, setActionInputs] = useState({
+    Monday: '',
+    Tuesday: '',
+    Wednesday: '',
+    Thursday: '',
+    Friday: '',
+    Saturday: '',
+    Sunday: '',
+  });
+
+  const addAction = (day) => {
+    if (timeInputs[day] && actionInputs[day]) {
+      const updatedDays = {
+        ...days,
+        [day]: [
+          ...days[day],
+          { id: Math.random().toString(36).substr(2, 9), time: timeInputs[day], action: actionInputs[day] },
+        ],
+      };
+      setDays(updatedDays);
+      setWeeksData((prevWeeks) => {
+        const newWeeksData = [...prevWeeks];
+        newWeeksData[weekIndex] = updatedDays;
+        return newWeeksData;
+      });
+      setTimeInputs((prevInputs) => ({ ...prevInputs, [day]: '' }));
+      setActionInputs((prevInputs) => ({ ...prevInputs, [day]: '' }));
+    } else {
+      alert('Please fill in both time and action.');
+    }
+  };
+
+  const removeAction = (day, id) => {
+    const updatedDays = {
+      ...days,
+      [day]: days[day].filter((action) => action.id !== id),
+    };
+    setDays(updatedDays);
+    setWeeksData((prevWeeks) => {
+      const newWeeksData = [...prevWeeks];
+      newWeeksData[weekIndex] = updatedDays;
+      return newWeeksData;
+    });
+  };
+
+  const setAsDay = (fromDay, toDay) => {
+    const updatedDays = {
+      ...days,
+      [toDay]: [...days[fromDay]],
+    };
+    setDays(updatedDays);
+    setWeeksData((prevWeeks) => {
+      const newWeeksData = [...prevWeeks];
+      newWeeksData[weekIndex] = updatedDays;
+      return newWeeksData;
+    });
+  };
+
+  const handleCopyClick = (day) => {
+    if (selectedDay) {
+      setAsDay(selectedDay, day);
+    } else {
+      alert('Please select a day to copy from.');
+    }
+  };
+
+  return (
+    <div className="App">
+      {Object.keys(days).map((day) => (
+        <div key={day} className="day-schedule">
+          <h2>{day}</h2>
+          <hr />
+          {days[day].map((action) => (
+            <div key={action.id} className="action-item">
+              <span>{action.time}</span>
+              <span>{action.action}</span>
+              <FaMinusCircle onClick={() => removeAction(day, action.id)} />
+            </div>
+          ))}
+          <hr />
+          <div className="action-inputs">
+            <input
+              type="time"
+              className="time"
+              value={timeInputs[day]}
+              onChange={(e) => setTimeInputs((prevInputs) => ({ ...prevInputs, [day]: e.target.value }))}
+            />
+            <select
+              value={actionInputs[day]}
+              className="action"
+              onChange={(e) => setActionInputs((prevInputs) => ({ ...prevInputs, [day]: e.target.value }))}
+            >
+              <option value="">Select Action</option>
+              <option value="Scale Up">Scale Up</option>
+              <option value="Scale Down">Scale Down</option>
+              <option value="Terminate">Terminate</option>
+              <option value="Restart">Restart</option>
+            </select>
+            <FaPlusCircle onClick={() => addAction(day)} />
+          </div>
+          <select
+            onChange={(e) => {
+              setSelectedDay(e.target.value);
+              setSetAsText(`Set as ${e.target.value}`);
+            }}
+          >
+            <option value="">Select Day</option>
+            {Object.keys(days).map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => handleCopyClick(day)}>Copy</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default Weekly;
