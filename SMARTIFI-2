@@ -1,0 +1,327 @@
+import React, { useState } from 'react';
+import Modal from 'react-modal';
+import { FaCloud, FaBolt, FaCog, FaChartLine, FaDollarSign, FaServer } from 'react-icons/fa';
+import "./Smartifi.css"
+
+function Smartifi() {
+  const [smartifiActive, setSmartifiActive] = useState(false);
+  const [showSmartifiPopup, setShowSmartifiPopup] = useState(false);
+
+  const handleSmartifiToggle = () => {
+    setSmartifiActive(!smartifiActive);
+    setShowSmartifiPopup(true);
+  };
+
+  return (
+    <div className={`smartifi-container ${smartifiActive ? 'active' : ''}`}>
+      <div className="smartifi-header">
+        <h2>Smartifi Cloud Optimizer</h2>
+        <button 
+          className={`toggle-button ${smartifiActive ? 'on' : 'off'}`} 
+          onClick={handleSmartifiToggle}
+        >
+          <FaBolt />
+          <span>{smartifiActive ? 'Activated' : 'Deactivated'}</span>
+        </button>
+      </div>
+
+      <div className="smartifi-visualization">
+        <div className="cloud-icon">
+          <FaCloud />
+        </div>
+        <div className={`optimization-ring ${smartifiActive ? 'active' : ''}`}>
+          <FaDollarSign  className="cog-icon" />
+          <FaChartLine className="chart-icon" />
+        </div>
+      </div>
+
+      <div className="smartifi-metrics">
+        <div className="metric-tile">
+          <FaDollarSign className="metric-icon" />
+          <h3>Cost Savings</h3>
+          <p className="metric-value">{smartifiActive ? '23%' : '0%'}</p>
+        </div>
+        <div className="metric-tile">
+          <FaBolt className="metric-icon" />
+          <h3>Performance Boost</h3>
+          <p className="metric-value">{smartifiActive ? '+31%' : '0%'}</p>
+        </div>
+        <div className="metric-tile">
+          <FaServer className="metric-icon" />
+          <h3>Resource Utilization</h3>
+          <p className="metric-value">{smartifiActive ? '92%' : '67%'}</p>
+        </div>
+      </div>
+
+      <div className="smartifi-features">
+        <div className="feature">
+          <h3>Real-time Analysis</h3>
+          <p>Continuous monitoring and adjustment of cloud resources</p>
+        </div>
+        <div className="feature">
+          <h3>Cost Reduction</h3>
+          <p>Intelligent allocation to minimize unnecessary expenses</p>
+        </div>
+        <div className="feature">
+          <h3>Performance Optimization</h3>
+          <p>Balancing resources for optimal application performance</p>
+        </div>
+      </div>
+
+      <Modal
+        isOpen={showSmartifiPopup}
+        onRequestClose={() => setShowSmartifiPopup(false)}
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2>Smartifi Cloud Optimizer {smartifiActive ? 'Activated' : 'Deactivated'}</h2>
+        <p>
+          Cloud cost optimization has been {smartifiActive ? 'activated' : 'deactivated'} for your infrastructure.
+        </p>
+        <button onClick={() => setShowSmartifiPopup(false)}>Close</button>
+      </Modal>
+    </div>
+  );
+}
+
+export default Smartifi;
+.smartifi-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff7e1;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .smartifi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .smartifi-header h2 {
+    font-size: 28px;
+    color: #b34200;
+  }
+  
+  .toggle-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .toggle-button.off {
+    background-color: #8b0000;
+    color: white;
+  }
+  
+  .toggle-button.on {
+    background-color: #fbc02d;
+    color: #8b0000;
+  }
+  
+  .toggle-button svg {
+    margin-right: 10px;
+  }
+  
+  .smartifi-visualization {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 40px;
+  }
+  
+  .cloud-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    color: #ffab00;
+  }
+  
+  .optimization-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 4px solid #ffab00;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  .optimization-ring.active {
+    animation: rotate 10s linear infinite;
+  }
+  
+  .cog-icon,
+  .chart-icon {
+    position: absolute;
+    font-size: 30px;
+    color: #b34200;
+  }
+  
+  .cog-icon {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .chart-icon {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .smartifi-metrics {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+  
+  .metric-tile {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  
+  .metric-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .metric-tile:not(:last-child) {
+    margin-right: 20px;
+  }
+  
+  .metric-icon {
+    font-size: 36px;
+    color: #ffab00;
+    margin-bottom: 10px;
+  }
+  
+  .metric-tile h3 {
+    font-size: 18px;
+    color: #b34200;
+    margin-bottom: 10px;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #8b0000;
+  }
+  
+  .smartifi-features {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .feature {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature:not(:last-child) {
+    margin-right: 20px;
+  }
+  
+  .feature h3 {
+    font-size: 18px;
+    color: #b34200;
+    margin-bottom: 10px;
+  }
+  
+  .feature p {
+    font-size: 14px;
+    color: #7f8c8d;
+  }
+  
+  .modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    outline: none;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal h2 {
+    font-size: 24px;
+    color: #b34200;
+    margin-bottom: 20px;
+  }
+  
+  .modal p {
+    font-size: 16px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+  }
+  
+  .modal button {
+    padding: 10px 20px;
+    background-color: #8b0000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal button:hover {
+    background-color: #6a1b19;
+  }
+  
