@@ -1,0 +1,215 @@
+import React, { useState, useEffect } from 'react';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import Monthutils from './Monthutils';
+import styles from './Monthly.module.css'; // Import CSS module
+
+function Monthly() {
+  const [expandedWeeks, setExpandedWeeks] = useState([false, false, false, false]);
+  const [selectedWeeks, setSelectedWeeks] = useState(['', '', '', '']); 
+  const [weekDates, setWeekDates] = useState([]);
+
+  useEffect(() => {
+    generateWeeksData();
+  }, []); 
+
+  const generateWeeksData = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const nextMonth = currentMonth + 1;
+
+    const nextYear = nextMonth > 11 ? currentDate.getFullYear() + 1 : currentDate.getFullYear();
+    const nextMonthIndex = nextMonth > 11 ? 0 : nextMonth;
+
+    const daysInNextMonth = new Date(nextYear, nextMonthIndex + 1, 0).getDate();
+
+    const initialWeeksData = Array.from({ length: 4 }, () => ({
+      Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: []
+    }));
+
+    const weekStartDates = [];
+    let startDate = new Date(nextYear, nextMonthIndex, 1);
+
+    for (let i = 0; i < 4; i++) {
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6);
+      weekStartDates.push({ start: new Date(startDate), end: new Date(endDate) });
+      startDate.setDate(startDate.getDate() + 7);
+    }
+
+    setWeeksData(initialWeeksData);
+    setExpandedWeeks(Array(4).fill(false));
+    setWeekDates(weekStartDates);
+  };
+
+  const toggleWeekExpansion = (weekIndex) => {
+    setExpandedWeeks((prev) => prev.map((expanded, i) => (i === weekIndex ? !expanded : expanded)));
+  };
+
+  const setAsWeek = (fromWeek, toWeek) => {
+    setWeeksData((prevWeeks) => {
+      const newWeeksData = [...prevWeeks];
+      Object.keys(prevWeeks[fromWeek]).forEach(day => {
+        newWeeksData[toWeek][day] = [...prevWeeks[fromWeek][day]];
+      });
+      return newWeeksData;
+    });
+  };
+
+  const handleCopyClick = (weekIndex) => {
+    if (selectedWeeks[weekIndex] !== '') {
+      setAsWeek(selectedWeeks[weekIndex], weekIndex);
+    } else {
+      alert('Please select a week to copy from.');
+    }
+  };
+
+  const isTileDisabled = (date) => {
+    const currentDate = new Date();
+    return date < currentDate;
+  };
+
+  const handleWeekSelectChange = (e, weekIndex) => {
+    const newSelectedWeeks = [...selectedWeeks];
+    newSelectedWeeks[weekIndex] = e.target.value;
+    setSelectedWeeks(newSelectedWeeks);
+  };
+
+  return (
+    <div className={styles.app}>
+      {expandedWeeks.map((expanded, weekIndex) => (
+        <div key={weekIndex} className={styles.monthlyWeek}>
+          <h3 onClick={() => toggleWeekExpansion(weekIndex)}>
+            Week {weekIndex + 1} {expanded ? <FaArrowUp /> : <FaArrowDown />}
+            {weekDates[weekIndex] && (
+              <span className={styles.weekDates}>
+                {`${weekDates[weekIndex].start.getDate()} ${getMonthName(weekDates[weekIndex].start.getMonth())} ${weekDates[weekIndex].start.getFullYear()} to ${weekDates[weekIndex].end.getDate()} ${getMonthName(weekDates[weekIndex].end.getMonth())} ${weekDates[weekIndex].end.getFullYear()}`}
+              </span>
+            )}
+          </h3>
+          {expanded && (
+            <div>
+              <Monthutils weekIndex={weekIndex} weekData={weeksData[weekIndex]} setWeeksData={setWeeksData} />
+              <select onChange={(e) => handleWeekSelectChange(e, weekIndex)} value={selectedWeeks[weekIndex]} className={styles.copySelect}>
+                <option value="">Select Week to Copy From</option>
+                {weeksData.map((_, index) => (
+                  <option key={index} value={index} disabled={index === weekIndex}>
+                    Week {index + 1}
+                  </option>
+                ))}
+              </select>
+              <button onClick={() => handleCopyClick(weekIndex)} className={styles.copyButton}>Copy</button>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function getMonthName(monthIndex) {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  return months[monthIndex];
+}
+
+export default Monthly;
+.app {
+  font-family: Arial, sans-serif;
+  width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.monthlyWeek {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.monthlyWeek h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 18px;
+  padding: 10px 20px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.monthlyWeek h3:hover {
+  background-color: #e0e0e0;
+}
+
+.monthlyWeek .weekDates {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.monthlyWeek .weekDates span {
+  display: block;
+}
+
+.monthlyWeek .weekDates span:first-child {
+  margin-bottom: 5px;
+}
+
+.monthlyWeek .weekDates span:last-child {
+  font-weight: bold;
+}
+
+.monthlyWeek .copySelect {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.monthlyWeek .copyButton {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #0071bc;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.dates{
+  text-align: center;
+  font-size: 25px;
+  font-weight: bolder;
+}
+.monthlyWeek .copyButton:hover {
+  background-color: #005a8c;
+}
+
+.monthlyWeek .copyButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 10px;
+  }
+
+  .monthlyWeek h3 {
+    font-size: 16px;
+  }
+
+  .monthlyWeek .copySelect,
+  .monthlyWeek .copyButton {
+    font-size: 12px;
+  }
+}
