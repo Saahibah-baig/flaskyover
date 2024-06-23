@@ -1,0 +1,429 @@
+import React, { useState } from 'react';
+import './Login.css';
+import { FaUser, FaLock, FaCloud, FaChartLine, FaEnvelope, FaBriefcase, FaUserTie } from 'react-icons/fa';
+
+const Login = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [lineOfBusiness, setLineOfBusiness] = useState('');
+  const [subLineOfBusiness, setSubLineOfBusiness] = useState('');
+  const [manager, setManager] = useState('');
+  const [isFlipped, setIsFlipped] = useState(false); 
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isLogin) {
+      console.log('Login attempted with:', username, password);
+    } else {
+      console.log('Signup attempted with:', {
+        username,
+        email,
+        password,
+        confirmPassword,
+        lineOfBusiness,
+        subLineOfBusiness,
+        manager
+      });
+    }
+  };
+
+  const handleFlipCard = () => {
+    setIsFlipped(!isFlipped); 
+    setIsLogin(!isLogin);
+  };
+
+  return (
+    <div className={`login-container ${isFlipped ? 'flipped' : ''}`}>
+      <div className="login-card">
+        {isLogin ? (
+          <>
+            <div className="card-left">
+              <div className="brand">
+                <FaCloud className="logo" />
+                <h1>Cloudifi</h1>
+              </div>
+              <p className="tagline">Optimizing your cloud, maximizing your savings</p>
+              <FaChartLine className="chart-icon" />
+            </div>
+            <div className="card-right">
+              <form className="login-form" onSubmit={handleSubmit}>
+                <h2>Access Your Dashboard</h2>
+                <div className="input-group">
+                  <FaUser className="input-icon" />
+                  <input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                  <label htmlFor="username">Username</label>
+                </div>
+                <div className="input-group">
+                  <FaLock className="input-icon" />
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <label htmlFor="password">Password</label>
+                </div>
+                <button type="submit" className="login-button">
+                  <span>Log In</span>
+                  <div className="button-effect"></div>
+                </button>
+                <div className="links">
+                  <a href="#forgot-password" className="forgot-password">Forgot Credentials?</a>
+                  <a href="#" className="signup" onClick={handleFlipCard}>New user? Sign Up</a>
+                </div>
+              </form>
+            </div>
+          </>
+        ) : (
+          <div className="signup-form">
+            <h2>Sign Up for Cloudifi</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="input-group">
+                  <FaUser className="input-icon" />
+                  <input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    placeholder="Username"
+                  />
+                </div>
+                <div className="input-group">
+                  <FaEnvelope className="input-icon" />
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="Email"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <FaLock className="input-icon" />
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Password"
+                  />
+                </div>
+                <div className="input-group">
+                  <FaLock className="input-icon" />
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    placeholder="Confirm Password"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <FaBriefcase className="input-icon" />
+                  <select
+                    id="lineOfBusiness"
+                    value={lineOfBusiness}
+                    onChange={(e) => setLineOfBusiness(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Line of Business</option>
+                    <option value="CT">CT</option>
+                    <option value="CTBT">CTBT</option>
+                    <option value="AT">AT</option>
+                    <option value="HR">HR</option>
+                  </select>
+                </div>
+                <div className="input-group">
+                  <FaBriefcase className="input-icon" />
+                  <select
+                    id="subLineOfBusiness"
+                    value={subLineOfBusiness}
+                    onChange={(e) => setSubLineOfBusiness(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Sub-Line of Business</option>
+                    <option value="Tech1">Tech 1</option>
+                    <option value="Tech2">Tech 2</option>
+                    <option value="Tech3">Tech 3</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <FaUserTie className="input-icon" />
+                  <select
+                    id="manager"
+                    value={manager}
+                    onChange={(e) => setManager(e.target.value)}
+                    required
+                  >
+                    <option value="">Select Manager</option>
+                    <option value="Manager1">Manager 1</option>
+                    <option value="Manager2">Manager 2</option>
+                    <option value="Manager3">Manager 3</option>
+                    <option value="Manager4">Manager 4</option>
+                    <option value="Manager5">Manager 5</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" className="login-button">
+                <span>Sign Up</span>
+                <div className="button-effect"></div>
+              </button>
+              <div className="links">
+                <a href="#" onClick={handleFlipCard}>Already have an account? Log In</a>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f0f2f5 0%, #e0e2e5 100%);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 2rem;
+}
+
+.login-card {
+  display: flex;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 80%;
+  max-width: 1200px;
+  height: 600px;
+}
+
+.card-left {
+  flex: 1;
+  background: linear-gradient(135deg, #D71E28 0%, #B11116 100%);
+  color: white;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 3rem;
+  margin-right: 1rem;
+  color: #FFCD11;
+}
+
+.brand h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.chart-icon {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 4rem;
+  color: #FFCD11;
+  opacity: 0.5;
+  animation: float 3s ease-in-out infinite;
+}
+
+.card-right, .signup-form {
+  flex: 1;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-form, .signup-form form {
+  width: 100%;
+}
+
+h2 {
+  color: #D71E28;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: #D71E28;
+  font-size: 1.2rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+  border-color: #D71E28;
+  box-shadow: 0 0 0 2px rgba(215, 30, 40, 0.2);
+}
+
+label {
+  position: absolute;
+  top: 50%;
+  left: 3rem;
+  transform: translateY(-50%);
+  color: #888;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 0.8rem;
+  background-color: white;
+  padding: 0 0.5rem;
+  color: #D71E28;
+}
+
+.login-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #D71E28;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.login-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.button-effect {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.login-button:hover {
+  background-color: #B11116;
+}
+
+.login-button:hover .button-effect {
+  left: 100%;
+}
+
+.links {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.links a {
+  color: #D71E28;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #B11116;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-row .input-group {
+  width: 48%;
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .card-left, .card-right, .signup-form {
+    padding: 2rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-row .input-group {
+    width: 100%;
+  }
+}
+
+.signup {
+  display: block;
+  margin-top: 10px;
+}
