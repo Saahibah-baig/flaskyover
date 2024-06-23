@@ -1,0 +1,327 @@
+import React, { useState, useEffect } from 'react';
+import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
+import styles from './Weekly.module.css'; 
+
+function Weekly() {
+  const [days, setDays] = useState({
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
+    Sunday: [],
+  });
+
+  const [selectedDay, setSelectedDay] = useState('');
+  const [setAsText, setSetAsText] = useState('');
+  const [weekStartDate, setWeekStartDate] = useState('');
+  const [weekEndDate, setWeekEndDate] = useState('');
+
+  const [timeInputs, setTimeInputs] = useState({
+    Monday: '',
+    Tuesday: '',
+    Wednesday: '',
+    Thursday: '',
+    Friday: '',
+    Saturday: '',
+    Sunday: '',
+  });
+
+  const [actionInputs, setActionInputs] = useState({
+    Monday: '',
+    Tuesday: '',
+    Wednesday: '',
+    Thursday: '',
+    Friday: '',
+    Saturday: '',
+    Sunday: '',
+  });
+
+  useEffect(() => {
+    generateWeekSchedule();
+  }, []); 
+
+  const getNextMonday = () => {
+    let today = new Date();
+    let dayOfWeek = today.getDay(); 
+
+ 
+    let daysUntilNextMonday = dayOfWeek === 1 ? 7 : 1 - dayOfWeek;
+    let nextMonday = new Date(today.setDate(today.getDate() + daysUntilNextMonday));
+
+    return nextMonday;
+  };
+
+
+  const generateWeekSchedule = () => {
+    let nextMonday = getNextMonday();
+    let weekStart = new Date(nextMonday); 
+    let weekEnd = new Date(nextMonday.setDate(nextMonday.getDate() + 6));
+    setWeekStartDate(formatDate(weekStart));
+    setWeekEndDate(formatDate(weekEnd));
+
+    let weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    let initialDays = {};
+
+    weekDays.forEach((day) => {
+      initialDays[day] = [];
+    });
+
+    setDays(initialDays);
+  };
+
+
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  };
+
+  const addAction = (day) => {
+    if (timeInputs[day] && actionInputs[day]) {
+      setDays((prevDays) => ({
+        ...prevDays,
+        [day]: [
+          ...prevDays[day],
+          { id: Math.random().toString(36).substr(2, 9), time: timeInputs[day], action: actionInputs[day] },
+        ],
+      }));
+      setTimeInputs((prevInputs) => ({ ...prevInputs, [day]: '' }));
+      setActionInputs((prevInputs) => ({ ...prevInputs, [day]: '' }));
+    } else {
+      alert('Please fill in both time and action.');
+    }
+  };
+
+  const removeAction = (day, id) => {
+    setDays((prevDays) => ({
+      ...prevDays,
+      [day]: prevDays[day].filter((action) => action.id !== id),
+    }));
+  };
+
+  const setAsDay = (fromDay, toDay) => {
+    setDays((prevDays) => ({
+      ...prevDays,
+      [toDay]: [...prevDays[fromDay]],
+    }));
+  };
+
+  const handleCopyClick = (day) => {
+    if (selectedDay) {
+      setAsDay(selectedDay, day);
+    } else {
+      alert('Please select a day to copy from.');
+    }
+  };
+
+  return (
+    <div className={styles.top}>
+      <div className={styles.dateHeader}>
+        <h2 >{`${weekStartDate} to ${weekEndDate}`}</h2>
+      </div>
+     <div className={styles.app}>
+     {Object.keys(days).map((day) => (
+        <div key={day} className={styles.daySchedule}>
+          <h2>{day}</h2>
+          <hr />
+          <div className={styles.actionInputs}>
+            <div className={styles.inputGroup}>
+              <input
+                type="time"
+                className={styles.time}
+                value={timeInputs[day]}
+                onChange={(e) => setTimeInputs((prevInputs) => ({ ...prevInputs, [day]: e.target.value }))}
+              />
+              <select
+                value={actionInputs[day]}
+                className={styles.action}
+                onChange={(e) => setActionInputs((prevInputs) => ({ ...prevInputs, [day]: e.target.value }))}
+              >
+                <option value="">Select Action</option>
+                <option value="Scale Up">Scale Up</option>
+                <option value="Scale Down">Scale Down</option>
+                <option value="Terminate">Terminate</option>
+                <option value="Restart">Restart</option>
+              </select>
+            </div>
+            <FaPlusCircle className={styles.FaPlus} onClick={() => addAction(day)} />
+          </div>
+          <div className={styles.copyControls}>
+            <select
+              onChange={(e) => {
+                setSelectedDay(e.target.value);
+                setSetAsText(`Set as ${e.target.value}`);
+              }}
+            >
+              <option value="">Select Day</option>
+              {Object.keys(days).map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <button onClick={() => handleCopyClick(day)}>Copy</button>
+          </div>
+          <hr />
+          {days[day].map((action) => (
+            <div key={action.id} className={styles.actionItem}>
+              <span>{action.time}</span>
+              <span>{action.action}</span>
+              <FaMinusCircle className={styles.minus} onClick={() => removeAction(day, action.id)} />
+            </div>
+          ))}
+        </div>
+      ))}
+     </div>
+    </div>
+  );
+}
+
+export default Weekly;
+.app {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7f9;
+  padding: 20px;
+  display: flex;
+
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.top{
+  display: flex;
+flex-direction: column;
+gap: 20px;}
+.dateHeader{
+  text-align: center;
+  margin-top: 20px;
+  color: #fff
+}
+
+.daySchedule {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-right: 20px; 
+  box-sizing: border-box;
+  width: 250px;
+  align-self: flex-start; 
+}
+
+.daySchedule h2 {
+  font-size: 20px;
+  color: #b31b1b;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.daySchedule hr {
+  border: 0;
+  height: 1px;
+  background: #ddd;
+  margin: 10px 0;
+}
+
+.actionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffc40d;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.actionItem span {
+  color: #333;
+  margin-right: 10px;
+}
+
+.actionItem .fa-minus-circle {
+  font-size: 18px;
+  color: red;
+  cursor: pointer;
+}
+
+.actionInputs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  justify-content: space-between;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup input[type="time"],
+.inputGroup select {
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 140px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.inputGroup input[type="time"]:focus,
+.inputGroup select:focus {
+  border-color: #b31b1b;
+  outline: none;
+}
+
+.copyControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.copyControls select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 10px;
+  font-size: 16px;
+  flex: 1;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease;
+}
+
+.copyControls select:focus {
+  border-color: #b31b1b;
+  outline: none;
+}
+
+.copyControls button {
+  background-color: #b31b1b;
+  color: white;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.copyControls button:hover {
+  background-color: #c91313;
+}
+
+.minus {
+  cursor: pointer;
+  font-size: 25px;
+  margin-right: 0px;
+}
+
+.FaPlus {
+  color: #b31b1b;
+  font-size: 30px;
+}
